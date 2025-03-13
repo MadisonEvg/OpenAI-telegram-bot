@@ -5,6 +5,7 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 from dotenv import load_dotenv
 from docx import Document
+import httpx
 
 load_dotenv()
 
@@ -15,13 +16,20 @@ WELCOME_PHRASE = os.getenv('WELCOME_PHRASE')
 MAX_MESSAGES = os.getenv('MAX_MESSAGES', None)
 TEMPERATURE = float(os.getenv('TEMPERATURE', 0.5))
 ASSISTANT_DELAY = int(os.getenv('ASSISTANT_DELAY', 1))
+PROXY_URL = os.getenv('PROXY_URL', 1)
+
+
+transport = httpx.AsyncHTTPTransport(proxy=PROXY_URL)
+async_client = httpx.AsyncClient(transport=transport)
 
 conversation_histories = {}
 user_message_count = {}
 
 client = AsyncOpenAI(
     api_key=OPENAI_API_KEY,
+    http_client=async_client
 )
+
 
 def read_prompt_from_word(file_path: str) -> str:
     try:
