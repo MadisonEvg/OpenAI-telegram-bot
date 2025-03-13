@@ -1,0 +1,10 @@
+version: '3'
+services:
+  bot:
+    build: .
+    container_name: test_telegram_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - .:/app
